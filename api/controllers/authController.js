@@ -1,31 +1,34 @@
 import User from '../models/userModel.js';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
+import createError from '../utils/createError.js';
 
-export const register = async (req, res) => {
+export const register = async (req, res, next) => {
   try {
     const hash = bcrypt.hashSync(req.body.password, 5);
 
     const newUser = new User({
+      //create user with client
       ...req.body,
       password: hash,
-    }); //create user with client
+    });
 
     await newUser.save();
     res.status(201).send('user has been created'); //successfully created = 201
   } catch (err) {
-    res.status(500).send('Something went wrong!!!');
+    next(err);
   }
 };
 
-export const login = async (req, res) => {
+export const login = async (req, res, next) => {
   try {
     const user = await User.findOne({ username: req.body.username }); // findOne because user is unique
-    if (!user) return res.status(404).send('User not found');
+
+    if (!user) return next(createError(404, 'User not foundd!!'));
 
     const isCorrect = bcrypt.compareSync(req.body.password, user.password); // , den öncesi kullanıcının yazdığı password ile user.password(DB deki password) eşleşiyor mu onu kontrol ediyor
     if (!isCorrect)
-      return res.status(400).send('Wrong password or username !!');
+      return next(createError(400, 'Wrong password or username !!'));
 
     const token = jwt.sign(
       {
@@ -38,7 +41,7 @@ export const login = async (req, res) => {
     const { password, ...info } = user._doc;
     res.cookie('accessToken', token, { httpOnly: true }).status(200).send(info);
   } catch (err) {
-    res.status(500).send('Something went wrong!!!');
+    next(err);
   }
 };
 
