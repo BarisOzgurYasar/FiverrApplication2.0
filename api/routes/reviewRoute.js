@@ -3,7 +3,6 @@ import express from 'express';
 const router = express.Router();
 
 //creating first endpoint
-router.get('/register');
-router.get('/login');
+router.get('/test');
 
 export default router;
