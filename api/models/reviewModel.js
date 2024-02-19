@@ -21,7 +21,7 @@ const reviewSchema = new Schema(
       required: true,
     },
   },
-  { timestapms: true }
+  { timestamps: true }
 );
 
 export default mongoose.model('Review', reviewSchema);

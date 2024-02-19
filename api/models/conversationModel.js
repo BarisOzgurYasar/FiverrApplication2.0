@@ -29,7 +29,7 @@ const conversationSchema = new Schema(
       required: false,
     },
   },
-  { timestapms: true }
+  { timestamps: true }
 );
 
 export default mongoose.model('Conversation', conversationSchema);
